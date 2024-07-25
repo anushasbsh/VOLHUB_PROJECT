@@ -1,45 +1,46 @@
-// src/Home.js
-
+// src/pages/LandingPage.js
 import { useNavigate } from 'react-router-dom';
+import Navbar from './NavBar';
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleButtonClick1 = () => {
-    navigate('/vollogin'); 
+    navigate('/vollogin');
   };
+
   const handleButtonClick2 = () => {
-    navigate('/orglogin'); 
+    navigate('/orglogin');
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <div className="relative flex flex-col items-center justify-center text-center">
-        <div className="letter text-center font-raleway text-4xl md:text-5xl font-bold mb-4 animate-fadeIn">
-          Find your dream job now
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <Navbar />
+      <main className="flex flex-col items-center justify-center flex-1 text-center p-6">
+        <div className="text-4xl md:text-5xl font-bold mb-4">
+          Connect with Opportunities
         </div>
-        <div className="para text-center font-raleway text-lg md:text-xl text-purple-600 mb-4 animate-fadeIn">
-          <h1>HII</h1>3lakh+ jobs for you to explore
+        <div className="text-lg md:text-xl text-purple-600 mb-4">
+          Explore thousands of volunteer and organizational opportunities.
         </div>
-        <div className="p text-center font-raleway text-lg md:text-xl text-gray-700 font-medium mb-4 animate-fadeIn">
-          AI Recruitment Software designed to source and hire candidates faster.
+        <div className="text-lg md:text-xl text-gray-700 font-medium mb-4">
+          Our platform helps you find the right fit for volunteering or organizational roles, quickly and efficiently.
         </div>
-        <button
-          onClick={handleButtonClick1}
-          className="mt-4 px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-white hover:text-purple-600 transition duration-300"
-        >
-          Volunteer
-        </button>
-        <button
-          onClick={handleButtonClick2}
-          className="mt-4 px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-white hover:text-purple-600 transition duration-300"
-        >
-          Organization
-        </button>
-      </div>
-      <div className="sidpic mt-8">
-        
-      </div>
+        <div className="flex gap-4 mt-4">
+          <button
+            onClick={handleButtonClick1}
+            className="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-white hover:text-purple-600 transition duration-300"
+          >
+            Volunteer
+          </button>
+          <button
+            onClick={handleButtonClick2}
+            className="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-white hover:text-purple-600 transition duration-300"
+          >
+            Organization
+          </button>
+        </div>
+      </main>
     </div>
   );
 };

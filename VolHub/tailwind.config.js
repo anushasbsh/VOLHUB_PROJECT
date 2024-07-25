@@ -7,8 +7,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        raleway: ['"Raleway"', 'sans-serif'],
+        raleway: ['Raleway', 'sans-serif'],
       },
+
       keyframes: {
         fadeIn: {
           '0%': { opacity: 0, transform: 'translateY(-20px)' },

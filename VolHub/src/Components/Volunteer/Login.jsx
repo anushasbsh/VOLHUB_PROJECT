@@ -1,4 +1,3 @@
-// src/components/Login.js
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -10,7 +9,7 @@ const VolLogin = () => {
     e.preventDefault();
     console.log('Email:', email);
     console.log('Password:', password);
-    // Implement your login logic here
+    
   };
 
   return (

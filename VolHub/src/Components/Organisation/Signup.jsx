@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import backgroundImage from '../../assets/Images/bg.jpg'; 
 import logo from '../../assets/Images/logo.png';
 import userIcon from '../../assets/Images/members.png'; // Import your user icon
@@ -8,29 +8,37 @@ const OrgSignup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [dob, setDob] = useState('');
-  const [interests, setInterests] = useState('');
-  const [resume, setResume] = useState(null);
+  const [website, setWebsite] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert('Passwords do not match!');
+    
+    // Validate phone number
+    if (phone.replace(/\D/g, '').length <= 9) {
+      setPhoneError('Phone number must be more than 10 digits.');
       return;
+    } else {
+      setPhoneError('');
     }
-    console.log('Name:', name);
+
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError('Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.');
+      return;
+    } else {
+      setPasswordError('');
+    }
+
+    console.log('Organization Name:', name);
     console.log('Email:', email);
     console.log('Phone:', phone);
-    console.log('Date of Birth:', dob);
-    console.log('Interests:', interests);
-    console.log('Resume:', resume?.name); // Show resume file name
-    // Implement your registration logic here
-  };
-
-  const handleFileChange = (e) => {
-    setResume(e.target.files[0]);
+    console.log('Website:', website);
+    navigate('/dashboard');
   };
 
   return (
@@ -54,10 +62,9 @@ const OrgSignup = () => {
 
       {/* Signup Form */}
       <div 
-  className="relative z-10 w-full max-w-lg p-8 space-y-6 bg-white bg-opacity-20 rounded-xl shadow-lg backdrop-blur-md my-10" 
-  style={{ backdropFilter: 'blur(10px)' }}
->
-
+        className="relative z-10 w-full max-w-lg p-8 space-y-6 bg-white bg-opacity-20 rounded-xl shadow-lg backdrop-blur-md my-10" 
+        style={{ backdropFilter: 'blur(10px)' }}
+      >
         {/* User Icon */}
         <div className="flex justify-center mb-4">
           <div className="p-2 rounded-full">
@@ -71,7 +78,7 @@ const OrgSignup = () => {
         <h1 className="text-2xl font-bold text-center text-white">Register</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300">Name</label>
+            <label className="block text-sm font-medium text-gray-300">Organization Name</label>
             <input
               type="text"
               value={name}
@@ -80,6 +87,7 @@ const OrgSignup = () => {
               required
             />
           </div>
+         
           <div>
             <label className="block text-sm font-medium text-gray-300">Email Address</label>
             <input
@@ -99,34 +107,15 @@ const OrgSignup = () => {
               className="w-full px-3 py-2 border rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            {phoneError && <p className="text-red-500 text-sm">{phoneError}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300">Date of Birth</label>
+            <label className="block text-sm font-medium text-gray-300">Website URL (Optional)</label>
             <input
-              type="date"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
+              type="url"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Interests</label>
-            <textarea
-              value={interests}
-              onChange={(e) => setInterests(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="3"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Resume Upload</label>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="w-full px-3 py-2 border rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
           </div>
           <div>
@@ -139,16 +128,7 @@ const OrgSignup = () => {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+          {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
           <button 
             type="submit" 
             className="w-full px-4 py-2 text-white bg-[#2980B9] rounded-lg hover:bg-[#aec8f0] focus:outline-none focus:ring-2 focus:ring-blue-500"

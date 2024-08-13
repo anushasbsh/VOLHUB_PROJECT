@@ -1,17 +1,18 @@
 import { Box} from "@chakra-ui/react"
-import Notification from "./Volunteer/Notification";
+import Notification from "./Notification";
 import Sidebar from "./Sidebar";
-import { useState } from "react";
-// import Profile from "./Profile";
-import Chatdrawer from "./Volunteer/Chatdrawer";
+import { useEffect, useState } from "react";
 import Dashboard from "./Volunteer/Dashboard";
-import OrgEventsPage from "./Organisation/OrgEvents";
-import EventsPage from "./Volunteer/Events";
 import OrgProfile from "./Organisation/OrgProfile";
 import Profile from "./Volunteer/Profile";
 import OrgDashboard from "./Organisation/OrgDashboard";
-
+import Post from "./Post";
 import { UsedbContext } from "../Services/UseContext";
+import { getUser } from "../Services/api";
+import Application from "./Application";
+import { socket } from "../Services/Socket";
+import Chatdrawer from "./ChatDrawer";
+
 
 function Layout() {
     const [isToggled, setIsToggled] = useState(false);
@@ -19,14 +20,53 @@ function Layout() {
     const [isChat,setisChat]=useState(false);
     const [isDash,setisDash]=useState(true);
     const [ispost,setispost]=useState(false);
+    const [isevent,setisEvent]=useState(false);
     const [isprofile,setisprofile]=useState(false);
+    
 
-    const{isVolunteer}=UsedbContext();
+    const{isVolunteer,user,setdbUser}=UsedbContext();
+
+    useEffect(() => {
+     
+  
+      socket.on('connect', () => {
+        console.log('Socket connected');
+      });
+  
+      // socket.on('disconnect', () => {
+      //   console.log('Socket disconnected');
+      // });
+      socket.on('notification', (data) => {
+        console.log(data);
+      });
+    
+    }, []);
+    
+    useEffect(()=>
+      {
+        const getuser=async()=>
+        {
+         const u= await getUser(user.email);
+         setdbUser(u);
+        }
+        getuser();
+      },[setdbUser, user.email])
+
     const onDashClick=()=>
         {
           setisDash(true);
           setispost(false);
           setisprofile(false); 
+          setisEvent(false);
+        }
+    
+        const onEventClick=()=>
+        {
+          setisDash(false);
+          setisEvent(true);
+          setispost(false);
+          setisprofile(false);      
+    
         }
     
         const onPostClick=()=>
@@ -34,7 +74,7 @@ function Layout() {
           setisDash(false);
           setispost(true);
           setisprofile(false);      
-    
+          setisEvent(false);
         }
     
         const onProfileClick=()=>
@@ -42,6 +82,7 @@ function Layout() {
           setisDash(false);
           setispost(false);
           setisprofile(true); 
+          setisEvent(false);
           console.log('profile clic')
         }
     
@@ -68,6 +109,7 @@ function Layout() {
     
                 }
               }
+             
 
   return (
     <>
@@ -79,6 +121,7 @@ function Layout() {
               onnotificationClick={onnotificationClick} 
               onChatClick={onChatClick}
               onDashClick={onDashClick}
+              onEventClick={onEventClick}
               onPostClick={onPostClick}
               onProfileClick={onProfileClick}
                />
@@ -86,7 +129,8 @@ function Layout() {
          {/* -----Dashboard----- */}
          <Box className="w-full h-screen overflow-auto">
          {isDash&&(isVolunteer?<Dashboard/>:<OrgDashboard/>)}
-          {ispost&&(isVolunteer?<EventsPage/>:<OrgEventsPage/>)}
+          {ispost&&(<Post setIsToggled={setIsToggled} isToggled={isToggled}/>)}
+          {isevent&&<Application />}
           {isprofile&&(isVolunteer? <Profile/>: <OrgProfile/>)}   
          
          </Box>    
@@ -101,6 +145,7 @@ function Layout() {
     <Chatdrawer/>
 
     </Box>}
+    
     </>
   )
 }

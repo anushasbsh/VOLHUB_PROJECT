@@ -1,89 +1,128 @@
-import { useState } from 'react';
-import { Avatar, Box, Button, Flex, Grid, Input, Text, FormControl, FormLabel, FormErrorMessage, useToast } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { Avatar, Box, Button, Flex, Grid, Input, Text, Select, Textarea, FormControl, FormLabel, FormErrorMessage, Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, useToast } from '@chakra-ui/react';
+import { UsedbContext } from '../../Services/UseContext';
+import { UpdateProfile } from '../../Services/api';
 
 function OrgProfile() {
+  // const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast(); 
+  const { dbUser } = UsedbContext();
+
   const [avatarSrc, setAvatarSrc] = useState('https://bootdey.com/img/Content/avatar/avatar7.png');
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    websiteURL: '',
-    street: '',
-    city: '',
-    state: '',
-    zipCode: ''
-  });
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [linkedinURL, setLinkedinURL] = useState('');
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [bankAccountHolderName, setBankAccountHolderName] = useState('');
+  const [bankAccNo, setBankAccNo] = useState('');
+  const [bankIFSC, setBankIFSC] = useState('');
+  const [bankName, setBankName] = useState('');
   const [errors, setErrors] = useState({});
-  const toast = useToast(); // Initialize the toast
+
+  useEffect(() => { 
+    if (dbUser) {
+      setFullName(dbUser.profile.name);
+      setPhone(dbUser.profile.phone);
+      setEmail(dbUser.email);
+      setStreet(dbUser.profile.street);
+      setCity(dbUser.profile.city);
+      setState(dbUser.profile.state);
+      setZipCode(dbUser.profile.zipCode);
+      setLinkedinURL(dbUser.profile.linkedinURL);
+      setBankAccountHolderName(dbUser.profile.bankAccountHolderName);
+      setBankAccNo(dbUser.profile.bankAccNo);
+      setBankIFSC(dbUser.profile.bankIFSC);
+      setBankName(dbUser.profile.bankName);
+    }
+  }, [dbUser]);
 
   const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarSrc(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    // Handle image upload logic here
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const validationErrors = {};
-
-    // Basic validation
-    if (!formData.fullName) validationErrors.fullName = "Full Name is required";
-    if (!formData.email) validationErrors.email = "Email is required";
-    if (!formData.phone) validationErrors.phone = "Contact No is required";
-    if (!formData.websiteURL) validationErrors.websiteURL = "Website URL is required";
-    if (!formData.street) validationErrors.street = "Street is required";
-    if (!formData.city) validationErrors.city = "City is required";
-    if (!formData.state) validationErrors.state = "State is required";
-    if (!formData.zipCode) validationErrors.zipCode = "Zip Code is required";
-
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      // Perform authentication or submit the form
-      console.log("Form data submitted:", formData);
-
-      // Show success toast
-      toast({
-        title: "Success!",
-        description: "Profile Updated!",
-        status: "success",
-        position: "top-right", // Position of the toast
-        duration: 5000,
-        isClosable: true,
-      });
+    switch (name) {
+      case 'fullName':
+        setFullName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+        case 'street':
+          setStreet(value);
+          break;
+          case 'city':
+            setCity(value);
+            break;
+            case 'state':
+              setState(value);
+              break;
+              case 'zipCode':
+                setZipCode(value);
+                break;
+                case 'linkedinURL':
+                    setLinkedinURL(value);
+                    break;
+      case 'bankAccountHolderName':
+        setBankAccountHolderName(value);
+        break;
+      case 'bankAccNo':
+        setBankAccNo(value);
+        break;
+      case 'bankIFSC':
+        setBankIFSC(value);
+        break;
+      case 'bankName':
+        setBankName(value);
+        break;
+      default:
+        break;
     }
   };
 
+
+  const handleSubmit = async(event) => {
+    event.preventDefault();
+     await UpdateProfile({name:fullName,email:email,phone:phone,linkedinURL:linkedinURL,street:street,city:city,state:state,zipCode:zipCode,bankAccountHolderName:bankAccountHolderName,bankAccNo:bankAccNo,bankIFSC:bankIFSC,bankName:bankName},dbUser.profile.id);
+  
+     toast({
+      title: "Success!",
+      description: "Profile Updated!",
+      status: "success",
+      position: "top-right", // Position of the toast
+      duration: 5000,
+      isClosable: true,
+    });
+
+    };
+
+  
   return (
-    <Flex direction="column" minHeight="100vh" bg="#dcdee0"> {/* Changed background color */}
+    <Flex direction="column" minHeight="100vh" bg="#dcdee0">
       <Box flex="1" p="8">
         <Box
           maxWidth="1200px"
           mx="auto"
-          bg="white"
-          boxShadow="xl" // Changed shadow
+          bg="rgba(255, 255, 255, 0.8)"
+          boxShadow="md"
           borderRadius="md"
           p="6"
+          backdropFilter="blur(20000px)"
+          border="1px solid rgba(255, 255, 255, 0.2)"
         >
           <form onSubmit={handleSubmit}>
-            <Grid templateColumns={{ base: '1fr', lg: '1fr 3fr' }} gap={6}>
+            <Grid templateColumns={{ base: '1fr', lg: '1fr 3fr' }} gap={6} pt={5}>
               <Box textAlign="center">
-                <Avatar size="xl" src={avatarSrc} mb="4" ml={7} mt={2} />
-                <Button as="label" colorScheme="blue" cursor="pointer" mb="4" position="relative" mt={3} ml={7}> {/* Adjusted button position */}
+                <Avatar size="xl" src={avatarSrc} mb="4" />
+                <Button as="label" colorScheme="blue" cursor="pointer" mb="4" marginTop={1} marginLeft={5}>
                   Upload Your Image
                   <Input
                     type="file"
@@ -95,28 +134,28 @@ function OrgProfile() {
               </Box>
 
               <Box>
-                <Text fontSize="lg" fontWeight="bold" color="blue.500" mb="4">Personal Details</Text>
+                <Text fontSize="lg" fontWeight="bold" color="blue.500" mb="3">Personal Details</Text>
                 <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
-                  <FormControl isInvalid={!!errors.fullName} mb="4" color={'black'}>
-                    <FormLabel>Full Name</FormLabel>
+                  <FormControl isInvalid={!!errors.fullName} mb="4">
+                    <FormLabel color="black">Full Name</FormLabel>
                     <Input
                       name="fullName"
-                      value={formData.fullName}
+                      value={fullName}
                       onChange={handleChange}
                       placeholder="Enter full name"
-                      border="1px solid #cfd1d8"
+                      border="1px solid #0a0a0a"
                       borderColor="#cfd1d8"
                       color="black"
                       required
                     />
                     {errors.fullName && <FormErrorMessage>{errors.fullName}</FormErrorMessage>}
                   </FormControl>
-                  <FormControl isInvalid={!!errors.email} mb="4" color={'black'}>
-                    <FormLabel>Email</FormLabel>
+                  <FormControl isInvalid={!!errors.email} mb="4">
+                    <FormLabel color="black">Email</FormLabel>
                     <Input
                       name="email"
                       type="email"
-                      value={formData.email}
+                      value={email}
                       onChange={handleChange}
                       placeholder="Enter email ID"
                       border="1px solid #cfd1d8"
@@ -126,13 +165,13 @@ function OrgProfile() {
                     />
                     {errors.email && <FormErrorMessage>{errors.email}</FormErrorMessage>}
                   </FormControl>
-                  <FormControl isInvalid={!!errors.phone} mb="4" color={'black'}>
-                    <FormLabel>Contact No</FormLabel>
+                  <FormControl isInvalid={!!errors.phone} mb="4">
+                    <FormLabel color="black">Phone</FormLabel>
                     <Input
                       name="phone"
-                      value={formData.phone}
+                      value={phone}
                       onChange={handleChange}
-                      placeholder="Enter contact number"
+                      placeholder="Enter phone number"
                       border="1px solid #cfd1d8"
                       borderColor="#cfd1d8"
                       color="black"
@@ -140,30 +179,29 @@ function OrgProfile() {
                     />
                     {errors.phone && <FormErrorMessage>{errors.phone}</FormErrorMessage>}
                   </FormControl>
-                  <FormControl isInvalid={!!errors.websiteURL} mb="4" color={'black'}>
-                    <FormLabel>Website URL</FormLabel>
+                  <FormControl isInvalid={!!errors.linkedinURL} mb="4">
+                    <FormLabel color="black">LinkedIn Profile URL</FormLabel>
                     <Input
-                      name="websiteURL"
-                      type="url"
-                      value={formData.websiteURL}
+                      name="linkedinURL"
+                      value={linkedinURL}
                       onChange={handleChange}
-                      placeholder="Enter website URL"
+                      placeholder="Enter LinkedIn Profile URL"
                       border="1px solid #cfd1d8"
                       borderColor="#cfd1d8"
                       color="black"
                       required
                     />
-                    {errors.websiteURL && <FormErrorMessage>{errors.websiteURL}</FormErrorMessage>}
+                    {errors.linkedinURL && <FormErrorMessage>{errors.linkedinURL}</FormErrorMessage>}
                   </FormControl>
                 </Grid>
 
                 <Text fontSize="lg" fontWeight="bold" color="blue.500" mt="8" mb="4">Address</Text>
-                <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4} >
-                  <FormControl isInvalid={!!errors.street} mb="4" color={'black'}>
-                    <FormLabel>Street</FormLabel>
+                <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+                  <FormControl isInvalid={!!errors.street} mb="4">
+                    <FormLabel color="black">Street</FormLabel>
                     <Input
                       name="street"
-                      value={formData.street}
+                      value={street}
                       onChange={handleChange}
                       placeholder="Enter Street"
                       border="1px solid #cfd1d8"
@@ -173,11 +211,11 @@ function OrgProfile() {
                     />
                     {errors.street && <FormErrorMessage>{errors.street}</FormErrorMessage>}
                   </FormControl>
-                  <FormControl isInvalid={!!errors.city} mb="4" color={'black'}>
-                    <FormLabel>City</FormLabel>
+                  <FormControl isInvalid={!!errors.city} mb="4">
+                    <FormLabel color="black">City</FormLabel>
                     <Input
                       name="city"
-                      value={formData.city}
+                      value={city}
                       onChange={handleChange}
                       placeholder="Enter City"
                       border="1px solid #cfd1d8"
@@ -187,11 +225,11 @@ function OrgProfile() {
                     />
                     {errors.city && <FormErrorMessage>{errors.city}</FormErrorMessage>}
                   </FormControl>
-                  <FormControl isInvalid={!!errors.state} mb="4" color={'black'}>
-                    <FormLabel>State</FormLabel>
+                  <FormControl isInvalid={!!errors.state} mb="4">
+                    <FormLabel color="black">State</FormLabel>
                     <Input
                       name="state"
-                      value={formData.state}
+                      value={state}
                       onChange={handleChange}
                       placeholder="Enter State"
                       border="1px solid #cfd1d8"
@@ -201,13 +239,13 @@ function OrgProfile() {
                     />
                     {errors.state && <FormErrorMessage>{errors.state}</FormErrorMessage>}
                   </FormControl>
-                  <FormControl isInvalid={!!errors.zipCode} mb="4" color={'black'}>
-                    <FormLabel>Zip Code</FormLabel>
+                  <FormControl isInvalid={!!errors.zipCode} mb="4">
+                    <FormLabel color="black">Zip Code</FormLabel>
                     <Input
                       name="zipCode"
-                      value={formData.zipCode}
+                      value={zipCode}
                       onChange={handleChange}
-                      placeholder="Zip Code"
+                      placeholder="Enter Zip Code"
                       border="1px solid #cfd1d8"
                       borderColor="#cfd1d8"
                       color="black"
@@ -215,11 +253,71 @@ function OrgProfile() {
                     />
                     {errors.zipCode && <FormErrorMessage>{errors.zipCode}</FormErrorMessage>}
                   </FormControl>
-                  
                 </Grid>
 
-                <Button type="submit" colorScheme="blue" float="right">
-                  Update
+                <Text fontSize="lg" fontWeight="bold" color="blue.500" mt="8" mb="4">Bank Details</Text>
+                <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+                  <FormControl isInvalid={!!errors.bankAccountHolderName} mb="4">
+                    <FormLabel color="black">Account Holder Name</FormLabel>
+                    <Input
+                      name="bankAccountHolderName"
+                      value={bankAccountHolderName}
+                      onChange={handleChange}
+                      placeholder="Enter Account Holder Name"
+                      border="1px solid #cfd1d8"
+                      borderColor="#cfd1d8"
+                      color="black"
+                      required
+                    />
+                    {errors.bankAccountHolderName && <FormErrorMessage>{errors.bankAccountHolderName}</FormErrorMessage>}
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.bankAccNo} mb="4">
+                    <FormLabel color="black">Account Number</FormLabel>
+                    <Input
+                      name="bankAccNo"
+                      value={bankAccNo}
+                      onChange={handleChange}
+                      placeholder="Enter Account Number"
+                      border="1px solid #cfd1d8"
+                      borderColor="#cfd1d8"
+                      color="black"
+                      required
+                    />
+                    {errors.bankAccNo && <FormErrorMessage>{errors.bankAccNo}</FormErrorMessage>}
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.bankIFSC} mb="4">
+                    <FormLabel color="black">IFSC Code</FormLabel>
+                    <Input
+                      name="bankIFSC"
+                      value={bankIFSC}
+                      onChange={handleChange}
+                      placeholder="Enter IFSC Code"
+                      border="1px solid #cfd1d8"
+                      borderColor="#cfd1d8"
+                      color="black"
+                      required
+                    />
+                    {errors.bankIFSC && <FormErrorMessage>{errors.bankIFSC}</FormErrorMessage>}
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.bankName} mb="4">
+                    <FormLabel color="black">Bank Name</FormLabel>
+                    <Input
+                      name="bankName"
+                      value={bankName}
+                      onChange={handleChange}
+                      placeholder="Enter Bank Name"
+                      border="1px solid #cfd1d8"
+                      borderColor="#cfd1d8"
+                      color="black"
+                      required
+                    />
+                    {errors.bankName && <FormErrorMessage>{errors.bankName}</FormErrorMessage>}
+                  </FormControl>
+                </Grid>
+
+                <Button type="submit" colorScheme="blue" mt="4"
+                onClick={()=>handleSubmit}>
+                  Save
                 </Button>
               </Box>
             </Grid>

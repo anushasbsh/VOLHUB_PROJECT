@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "react-countup": "^6.5.3",
+    "react-player": "^2.16.0"
+  }
+}

@@ -1,17 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Flex, Grid, Text, Image, Link } from '@chakra-ui/react';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement } from 'chart.js';
 import avantaa from "../../assets/Images/avantaa.png";
+import { getUser } from '../../Services/api';
+import { UsedbContext } from '../../Services/UseContext';
+import { socket } from '../../Services/Socket';
 
-// Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
 function Dashboard() {
-  const [eventsAttended] = useState(10);
-  const [timeSpent] = useState('25 hours');
-  const [rewardsEarned] = useState('150 points');
-  const [donationCollected] = useState('$500');
+  const [eventsAttended, setEventsAttended] = useState(1);
+  const [timeSpent, setTimeSpent] = useState('8 hours');
+  const [rewardsEarned, setRewardsEarned] = useState('50 points');
+  const [donationCollected, setDonationCollected] = useState('$20');
+
+  const{dbUser}=UsedbContext();
+
+
+  if(dbUser)
+    {
+      socket.emit('user_online', dbUser.id);
+    }
+
+  useEffect(() => {
+    // Fetch data from the backend
+    getUser()
+      .then(data => {
+        setEventsAttended(data.eventsAttended);
+        setTimeSpent(data.timeSpent);
+        setRewardsEarned(data.rewardsEarned);
+        setDonationCollected(data.donationCollected);
+      })
+      .catch(error => {
+        console.error('Error fetching dashboard data:', error);
+      });
+  }, []);
 
   const chartData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
@@ -65,76 +89,6 @@ function Dashboard() {
       title: {
         display: true,
         text: 'Events Attended',
-        font: {
-          size: 20,
-          weight: 'bold',
-        },
-        color: '#333',
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          font: {
-            size: 14,
-          },
-        },
-      },
-      y: {
-        grid: {
-          borderColor: '#ddd',
-        },
-        ticks: {
-          font: {
-            size: 14,
-          },
-        },
-      },
-    },
-  };
-
-  const lineChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-    datasets: [
-      {
-        label: 'Time Spent',
-        data: [20, 30, 25, 40, 35],
-        borderColor: 'rgba(153, 102, 255, 1)',
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-        fill: true,
-        tension: 0.4,
-      },
-    ],
-  };
-
-  const lineChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          font: {
-            size: 16,
-            weight: 'bold',
-          },
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => `${context.dataset.label}: ${context.raw}`,
-        },
-        backgroundColor: '#fff',
-        titleColor: '#333',
-        bodyColor: '#666',
-        borderColor: '#ddd',
-        borderWidth: 1,
-      },
-      title: {
-        display: true,
-        text: 'Time Spent Over Months',
         font: {
           size: 20,
           weight: 'bold',
@@ -229,9 +183,9 @@ function Dashboard() {
         <Grid
           templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
           gap="6"
-          h="30%"
+          h="50%"
         >
-          <Box bg="white" boxShadow="xl" p="6" borderRadius="md" h="100%">
+          <Box bg="white" boxShadow="xl" paddingLeft={6} pt={7} paddingBottom={20} borderRadius="md" h="100%">
             <Text fontSize="lg" fontWeight="bold" color="black">Events Overview</Text>
             <Bar data={chartData} options={chartOptions} />
           </Box>
@@ -258,11 +212,6 @@ function Dashboard() {
             />
           </Box>
         </Grid>
-
-        <Box bg="white" boxShadow="xl" p="6" borderRadius="md" h="30%">
-          <Text fontSize="lg" fontWeight="bold" color="black">Time Spent Over Months</Text>
-          <Line data={lineChartData} options={lineChartOptions} />
-        </Box>
       </Flex>
     </Flex>
   );

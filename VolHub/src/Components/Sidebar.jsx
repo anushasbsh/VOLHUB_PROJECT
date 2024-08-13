@@ -4,12 +4,13 @@ import { CiHeart } from "react-icons/ci";
 import { SiSparkpost } from "react-icons/si";
 import { IoMdLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { FaSignsPost } from "react-icons/fa6";
 import logoImage from '../assets/Images/sidelogo.png';
 import { BsFillChatSquareTextFill } from "react-icons/bs";
 import PropTypes from 'prop-types';
 import { UsedbContext } from "../Services/UseContext";
 
-function Sidebar({ onnotificationClick, onChatClick, onProfileClick, onPostClick, onDashClick }) {
+function Sidebar({ onnotificationClick, onChatClick, onProfileClick, onEventClick, onPostClick, onDashClick }) {
   const navigate = useNavigate();
 
   const {logout} = UsedbContext()
@@ -41,8 +42,8 @@ function Sidebar({ onnotificationClick, onChatClick, onProfileClick, onPostClick
         bgPosition="center"
         marginLeft={5}
         width="60%"
-        height="60px"
-        mt={5}
+        height="100%"
+        mt={6}
         onClick={handleLogoClick}
         cursor="pointer"
       />
@@ -72,9 +73,24 @@ function Sidebar({ onnotificationClick, onChatClick, onProfileClick, onPostClick
           borderRadius="md"
           _hover={{ bg: "#4a4a4a" }}
           cursor="pointer"
-          onClick={onPostClick}
+          onClick={onEventClick}
         >
           <SiSparkpost size="30px" color="#f2e9e4" />
+          <Text fontSize="lg" fontWeight="400" color="#f2e9e4" marginLeft={0}>
+            Events
+          </Text>
+        </Box>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={3}
+          py={3}
+          borderRadius="md"
+          _hover={{ bg: "#4a4a4a" }}
+          cursor="pointer"
+          onClick={onPostClick}
+        >
+          <FaSignsPost  size="30px" color="#f2e9e4" />
           <Text fontSize="lg" fontWeight="400" color="#f2e9e4" marginLeft={0}>
             Posts
           </Text>
@@ -120,17 +136,17 @@ function Sidebar({ onnotificationClick, onChatClick, onProfileClick, onPostClick
         <Box flex="1" />
 
     {/* Profile and Logout */}
-<Box mt={280} display="flex" flexDirection="column" alignItems="center" ml={-90}>
+<Box mt={250} display="flex" flexDirection="column" alignItems="center" ml={-90}>
   <Box
     display="flex"
     alignItems="center"
     gap={3}
     py={3}
+    
     borderRadius="md"
     _hover={{ bg: "#4a4a4a" }}
-    cursor="pointer"
-    width = "100%"
-    ml={170}
+    width = "70%"
+    ml={90}
     onClick={onProfileClick}
   >
     <Avatar
@@ -148,12 +164,12 @@ function Sidebar({ onnotificationClick, onChatClick, onProfileClick, onPostClick
     alignItems="center"
     gap={3}
     py={3}
-    ml={100}
+    ml={90}
     borderRadius="md"
     _hover={{ bg: "#4a4a4a" }}
     cursor="pointer"
     onClick={handleLogout}
-    width="100%"  // Added width to ensure it's long enough
+    width="70%"  // Added width to ensure it's long enough
     maxWidth="200px" // Optional: to set a maximum width if needed
   >
     <IoMdLogOut size="30px" color="#f2e9e4" />
@@ -175,6 +191,7 @@ Sidebar.propTypes = {
   onProfileClick: PropTypes.func.isRequired,
   onPostClick: PropTypes.func.isRequired,
   onDashClick: PropTypes.func.isRequired,
+  onEventClick: PropTypes.func.isRequired,
 };
 
 export default Sidebar;

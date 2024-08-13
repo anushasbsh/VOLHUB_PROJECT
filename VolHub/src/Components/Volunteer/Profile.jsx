@@ -1,105 +1,143 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Avatar, Box, Button, Flex, Grid, Input, Text, Select, Textarea, FormControl, FormLabel, FormErrorMessage, Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, useToast } from '@chakra-ui/react';
+import { UsedbContext } from '../../Services/UseContext';
+import { UpdateProfile } from '../../Services/api';
 
 function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();  // Initialize the toast hook
+  const toast = useToast(); 
+  const { dbUser } = UsedbContext();
 
   const [avatarSrc, setAvatarSrc] = useState('https://bootdey.com/img/Content/avatar/avatar7.png');
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    dob: '',
-    street: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    skills: '',
-    experience: '',
-    medicalCert: null,
-    resume: null,
-    areasOfInterest: '',
-    linkedinURL: '',
-    bankAccountHolderName: '',
-    bankAccNo: '',
-    bankIFSC: '',
-    bankName: ''
-  });
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dob, setDob] = useState('');
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [skills, setSkills] = useState('');
+  const [experience, setExperience] = useState('');
+  const [medicalCert, setMedicalCert] = useState(null);
+  const [resume, setResume] = useState(null);
+  const [areasOfInterest, setAreasOfInterest] = useState('');
+  const [linkedinURL, setLinkedinURL] = useState('');
+  const [bankAccountHolderName, setBankAccountHolderName] = useState('');
+  const [bankAccNo, setBankAccNo] = useState('');
+  const [bankIFSC, setBankIFSC] = useState('');
+  const [bankName, setBankName] = useState('');
   const [errors, setErrors] = useState({});
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarSrc(reader.result);
-        setFormData(prevData => ({
-          ...prevData,
-          avatar: file
-        }));
-      };
-      reader.readAsDataURL(file);
+  useEffect(() => {
+    if (dbUser) {
+      setFullName(dbUser.profile.name);
+      setPhone(dbUser.profile.phone);
+      setEmail(dbUser.email);
+      setDob(dbUser.profile.dob);
+      setStreet(dbUser.profile.street);
+      setCity(dbUser.profile.city);
+      setState(dbUser.profile.state);
+      setZipCode(dbUser.profile.zipCode);
+      setSkills(dbUser.profile.skills);
+      setExperience(dbUser.profile.experience);
+      setAreasOfInterest(dbUser.profile.areasOfInterest);
+      setLinkedinURL(dbUser.profile.linkedinURL);
+      setBankAccountHolderName(dbUser.profile.bankAccountHolderName);
+      setBankAccNo(dbUser.profile.bankAccNo);
+      setBankIFSC(dbUser.profile.bankIFSC);
+      setBankName(dbUser.profile.bankName);
     }
+  }, [dbUser]);
+
+  const handleImageUpload = (event) => {
+    // Handle image upload logic here
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
+    switch (name) {
+      case 'fullName':
+        setFullName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+      case 'dob':
+        setDob(value);
+        break;
+      case 'street':
+        setStreet(value);
+        break;
+      case 'city':
+        setCity(value);
+        break;
+      case 'state':
+        setState(value);
+        break;
+      case 'zipCode':
+        setZipCode(value);
+        break;
+      case 'skills':
+        setSkills(value);
+        break;
+      case 'experience':
+        setExperience(value);
+        break;
+      case 'areasOfInterest':
+        setAreasOfInterest(value);
+        break;
+      case 'linkedinURL':
+        setLinkedinURL(value);
+        break;
+      case 'bankAccountHolderName':
+        setBankAccountHolderName(value);
+        break;
+      case 'bankAccNo':
+        setBankAccNo(value);
+        break;
+      case 'bankIFSC':
+        setBankIFSC(value);
+        break;
+      case 'bankName':
+        setBankName(value);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleFileChange = (event) => {
     const { name, files } = event.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: files[0]
-    }));
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const validationErrors = {};
-
-    // Basic validation
-    if (!formData.fullName) validationErrors.fullName = "Full Name is required";
-    if (!formData.email) validationErrors.email = "Email is required";
-    if (!formData.phone) validationErrors.phone = "Phone number is required";
-    if (!formData.dob) validationErrors.dob = "Date of Birth is required";
-    if (!formData.street) validationErrors.street = "Street is required";
-    if (!formData.city) validationErrors.city = "City is required";
-    if (!formData.state) validationErrors.state = "State is required";
-    if (!formData.zipCode) validationErrors.zipCode = "Zip Code is required";
-    if (!formData.skills) validationErrors.skills = "Skills are required";
-    if (!formData.experience) validationErrors.experience = "Experience is required";
-    if (!formData.areasOfInterest) validationErrors.areasOfInterest = "Areas of Interest are required";
-    if (!formData.linkedinURL) validationErrors.linkedinURL = "LinkedIn URL is required";
-    // Bank details validation
-    if (!formData.bankAccountHolderName) validationErrors.bankAccountHolderName = "Account Holder Name is required";
-    if (!formData.bankAccNo) validationErrors.bankAccNo = "Account Number is required";
-    if (!formData.bankIFSC) validationErrors.bankIFSC = "IFSC Code is required";
-    if (!formData.bankName) validationErrors.bankName = "Bank Name is required";
-
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      // Open the drawer with the entered details
-      onOpen();
-
-      // Show success toast
-      toast({
-        title: "Profile Updated.",
-        description: "Your profile details have been updated successfully.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+    if (files.length > 0) {
+      const file = files[0];
+      if (name === 'medicalCert') {
+        setMedicalCert(file);
+      } else if (name === 'resume') {
+        setResume(file);
+      }
     }
   };
 
+  const handleSubmit = async(event) => {
+    event.preventDefault();
+     await UpdateProfile({name:fullName,email:email,phone:phone,dob:dob,street:street,city:city,state:state,zipCode:zipCode,skills:skills,experience:experience,areasOfInterest:areasOfInterest,linkedinURL:linkedinURL,bankAccountHolderName:bankAccountHolderName,bankAccNo:bankAccNo,bankIFSC:bankIFSC,bankName:bankName},dbUser.profile.id);
+  
+     toast({
+      title: "Success!",
+      description: "Profile Updated!",
+      status: "success",
+      position: "top-right", // Position of the toast
+      duration: 5000,
+      isClosable: true,
+    });
+
+    };
+
+  
   return (
     <Flex direction="column" minHeight="100vh" bg="#dcdee0">
       <Box flex="1" p="8">
@@ -114,7 +152,6 @@ function Profile() {
           border="1px solid rgba(255, 255, 255, 0.2)"
         >
           <form onSubmit={handleSubmit}>
-                <Text color={"blue.500"} fontSize={"35"} fontWeight={"bold"} textDecorationLine={"underline"} ml={96}>Profile</Text>
             <Grid templateColumns={{ base: '1fr', lg: '1fr 3fr' }} gap={6} pt={5}>
               <Box textAlign="center">
                 <Avatar size="xl" src={avatarSrc} mb="4" />
@@ -136,7 +173,7 @@ function Profile() {
                     <FormLabel color="black">Full Name</FormLabel>
                     <Input
                       name="fullName"
-                      value={formData.fullName}
+                      value={fullName}
                       onChange={handleChange}
                       placeholder="Enter full name"
                       border="1px solid #0a0a0a"
@@ -151,7 +188,7 @@ function Profile() {
                     <Input
                       name="email"
                       type="email"
-                      value={formData.email}
+                      value={email}
                       onChange={handleChange}
                       placeholder="Enter email ID"
                       border="1px solid #cfd1d8"
@@ -165,7 +202,7 @@ function Profile() {
                     <FormLabel color="black">Phone</FormLabel>
                     <Input
                       name="phone"
-                      value={formData.phone}
+                      value={phone}
                       onChange={handleChange}
                       placeholder="Enter phone number"
                       border="1px solid #cfd1d8"
@@ -180,12 +217,25 @@ function Profile() {
                     <Input
                       name="dob"
                       type="date"
-                      value={formData.dob}
+                      value={dob}
                       onChange={handleChange}
                       border="1px solid #cfd1d8"
                       borderColor="#cfd1d8"
                       color="black"
                       required
+                      sx={{
+                        '::after': {
+                          content: '"📅"', // Calendar emoji
+                          color: 'black',
+                          fontSize: '1.2em',
+                          position: 'absolute',
+                          right: '10px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          pointerEvents: 'none'
+                        },
+                        position: 'relative'
+                      }}
                     />
                     {errors.dob && <FormErrorMessage>{errors.dob}</FormErrorMessage>}
                   </FormControl>
@@ -197,7 +247,7 @@ function Profile() {
                     <FormLabel color="black">Street</FormLabel>
                     <Input
                       name="street"
-                      value={formData.street}
+                      value={street}
                       onChange={handleChange}
                       placeholder="Enter Street"
                       border="1px solid #cfd1d8"
@@ -211,7 +261,7 @@ function Profile() {
                     <FormLabel color="black">City</FormLabel>
                     <Input
                       name="city"
-                      value={formData.city}
+                      value={city}
                       onChange={handleChange}
                       placeholder="Enter City"
                       border="1px solid #cfd1d8"
@@ -225,7 +275,7 @@ function Profile() {
                     <FormLabel color="black">State</FormLabel>
                     <Input
                       name="state"
-                      value={formData.state}
+                      value={state}
                       onChange={handleChange}
                       placeholder="Enter State"
                       border="1px solid #cfd1d8"
@@ -239,7 +289,7 @@ function Profile() {
                     <FormLabel color="black">Zip Code</FormLabel>
                     <Input
                       name="zipCode"
-                      value={formData.zipCode}
+                      value={zipCode}
                       onChange={handleChange}
                       placeholder="Enter Zip Code"
                       border="1px solid #cfd1d8"
@@ -251,66 +301,57 @@ function Profile() {
                   </FormControl>
                 </Grid>
 
-                <Text fontSize="lg" fontWeight="bold" color="blue.500" mt="8" mb="4">Skills and Experience</Text>
-                <FormControl isInvalid={!!errors.skills} mb="4">
-                  <FormLabel color="black">Skills</FormLabel>
-                  <Textarea
-                    name="skills"
-                    value={formData.skills}
-                    onChange={handleChange}
-                    placeholder="Describe your skills"
-                    border="1px solid #cfd1d8"
-                    borderColor="#cfd1d8"
-                    color="black"
-                    required
-                  />
-                  {errors.skills && <FormErrorMessage>{errors.skills}</FormErrorMessage>}
-                </FormControl>
-                <FormControl isInvalid={!!errors.experience} mb="4">
-                  <FormLabel color="black">Experience</FormLabel>
-                  <Textarea
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleChange}
-                    placeholder="Describe your experience"
-                    border="1px solid #cfd1d8"
-                    borderColor="#cfd1d8"
-                    color="black"
-                    required
-                  />
-                  {errors.experience && <FormErrorMessage>{errors.experience}</FormErrorMessage>}
-                </FormControl>
-
-                <Text fontSize="lg" fontWeight="bold" color="blue.500" mt="8" mb="4">Additional Information</Text>
+                <Text fontSize="lg" fontWeight="bold" color="blue.500" mt="8" mb="4">Professional Details</Text>
                 <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
-                  <FormControl isInvalid={!!errors.areasOfInterest} mb="4">
-                    <FormLabel color="black">Areas of Interest</FormLabel>
-                    <Select
-                      name="areasOfInterest"
-                      value={formData.areasOfInterest}
+                  <FormControl isInvalid={!!errors.skills} mb="4">
+                    <FormLabel color="black">Skills</FormLabel>
+                    <Textarea
+                      name="skills"
+                      value={skills}
                       onChange={handleChange}
-                      placeholder="Select your areas of interest"
+                      placeholder="Enter Skills"
                       border="1px solid #cfd1d8"
                       borderColor="#cfd1d8"
                       color="black"
                       required
-                    >
-                      <option value="Environment">Environment</option>
-                      <option value="Education">Education</option>
-                      <option value="Health">Health</option>
-                      <option value="Community">Community</option>
-                      <option value="Other">Other</option>
-                    </Select>
+                    />
+                    {errors.skills && <FormErrorMessage>{errors.skills}</FormErrorMessage>}
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.experience} mb="4">
+                    <FormLabel color="black">Experience</FormLabel>
+                    <Textarea
+                      name="experience"
+                      value={experience}
+                      onChange={handleChange}
+                      placeholder="Enter Experience"
+                      border="1px solid #cfd1d8"
+                      borderColor="#cfd1d8"
+                      color="black"
+                      required
+                    />
+                    {errors.experience && <FormErrorMessage>{errors.experience}</FormErrorMessage>}
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.areasOfInterest} mb="4">
+                    <FormLabel color="black">Areas of Interest</FormLabel>
+                    <Textarea
+                      name="areasOfInterest"
+                      value={areasOfInterest}
+                      onChange={handleChange}
+                      placeholder="Enter Areas of Interest"
+                      border="1px solid #cfd1d8"
+                      borderColor="#cfd1d8"
+                      color="black"
+                      required
+                    />
                     {errors.areasOfInterest && <FormErrorMessage>{errors.areasOfInterest}</FormErrorMessage>}
                   </FormControl>
                   <FormControl isInvalid={!!errors.linkedinURL} mb="4">
-                    <FormLabel color="black">LinkedIn URL</FormLabel>
+                    <FormLabel color="black">LinkedIn Profile URL</FormLabel>
                     <Input
                       name="linkedinURL"
-                      type="url"
-                      value={formData.linkedinURL}
+                      value={linkedinURL}
                       onChange={handleChange}
-                      placeholder="Enter LinkedIn URL"
+                      placeholder="Enter LinkedIn Profile URL"
                       border="1px solid #cfd1d8"
                       borderColor="#cfd1d8"
                       color="black"
@@ -318,25 +359,37 @@ function Profile() {
                     />
                     {errors.linkedinURL && <FormErrorMessage>{errors.linkedinURL}</FormErrorMessage>}
                   </FormControl>
+                </Grid>
+
+                <Text fontSize="lg" fontWeight="bold" color="blue.500" mt="8" mb="4">Documents</Text>
+                <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                   <FormControl isInvalid={!!errors.medicalCert} mb="4">
-                    <FormLabel color="black">Upload Medical Certificate (Optional)</FormLabel>
+                    <FormLabel color="black">Medical Certificate</FormLabel>
                     <Input
-                      type="file"
                       name="medicalCert"
+                      type="file"
                       onChange={handleFileChange}
+                      accept=".pdf, .doc, .docx, .jpeg, .jpg, .png"
                       border="1px solid #cfd1d8"
                       borderColor="#cfd1d8"
+                      color="black"
+                      // required
                     />
+                    {errors.medicalCert && <FormErrorMessage>{errors.medicalCert}</FormErrorMessage>}
                   </FormControl>
                   <FormControl isInvalid={!!errors.resume} mb="4">
-                    <FormLabel color="black">Upload Resume</FormLabel>
+                    <FormLabel color="black">Resume</FormLabel>
                     <Input
-                      type="file"
                       name="resume"
+                      type="file"
                       onChange={handleFileChange}
+                      accept=".pdf, .doc, .docx"
                       border="1px solid #cfd1d8"
                       borderColor="#cfd1d8"
+                      color="black"
+                      // required
                     />
+                    {errors.resume && <FormErrorMessage>{errors.resume}</FormErrorMessage>}
                   </FormControl>
                 </Grid>
 
@@ -346,7 +399,7 @@ function Profile() {
                     <FormLabel color="black">Account Holder Name</FormLabel>
                     <Input
                       name="bankAccountHolderName"
-                      value={formData.bankAccountHolderName}
+                      value={bankAccountHolderName}
                       onChange={handleChange}
                       placeholder="Enter Account Holder Name"
                       border="1px solid #cfd1d8"
@@ -360,7 +413,7 @@ function Profile() {
                     <FormLabel color="black">Account Number</FormLabel>
                     <Input
                       name="bankAccNo"
-                      value={formData.bankAccNo}
+                      value={bankAccNo}
                       onChange={handleChange}
                       placeholder="Enter Account Number"
                       border="1px solid #cfd1d8"
@@ -374,7 +427,7 @@ function Profile() {
                     <FormLabel color="black">IFSC Code</FormLabel>
                     <Input
                       name="bankIFSC"
-                      value={formData.bankIFSC}
+                      value={bankIFSC}
                       onChange={handleChange}
                       placeholder="Enter IFSC Code"
                       border="1px solid #cfd1d8"
@@ -388,7 +441,7 @@ function Profile() {
                     <FormLabel color="black">Bank Name</FormLabel>
                     <Input
                       name="bankName"
-                      value={formData.bankName}
+                      value={bankName}
                       onChange={handleChange}
                       placeholder="Enter Bank Name"
                       border="1px solid #cfd1d8"
@@ -398,47 +451,19 @@ function Profile() {
                     />
                     {errors.bankName && <FormErrorMessage>{errors.bankName}</FormErrorMessage>}
                   </FormControl>
+                  
+
                 </Grid>
 
-                <Button type="submit" colorScheme="blue" ml="700" mt="8">Update Profile</Button>
+                <Button type="submit" colorScheme="blue" mt="4"
+                onClick={()=>handleSubmit}>
+                  Save
+                </Button>
               </Box>
             </Grid>
           </form>
         </Box>
       </Box>
-
-      {/* Drawer to display profile details */}
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-        <DrawerOverlay>
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader>Your Profile Details</DrawerHeader>
-            <DrawerBody>
-              <Text><b>Full Name:</b> {formData.fullName}</Text>
-              <Text><b>Email:</b> {formData.email}</Text>
-              <Text><b>Phone:</b> {formData.phone}</Text>
-              <Text><b>Date of Birth:</b> {formData.dob}</Text>
-              <Text><b>Street:</b> {formData.street}</Text>
-              <Text><b>City:</b> {formData.city}</Text>
-              <Text><b>State:</b> {formData.state}</Text>
-              <Text><b>Zip Code:</b> {formData.zipCode}</Text>
-              <Text><b>Skills:</b> {formData.skills}</Text>
-              <Text><b>Experience:</b> {formData.experience}</Text>
-              <Text><b>Areas of Interest:</b> {formData.areasOfInterest}</Text>
-              <Text><b>LinkedIn URL:</b> {formData.linkedinURL}</Text>
-              <Text><b>Account Holder Name:</b> {formData.bankAccountHolderName}</Text>
-              <Text><b>Account Number:</b> {formData.bankAccNo}</Text>
-              <Text><b>IFSC Code:</b> {formData.bankIFSC}</Text>
-              <Text><b>Bank Name:</b> {formData.bankName}</Text>
-            </DrawerBody>
-            <DrawerFooter>
-              <Button variant="outline" mr={3} onClick={onClose}>
-                Close
-              </Button>
-            </DrawerFooter>
-          </DrawerContent>
-        </DrawerOverlay>
-      </Drawer>
     </Flex>
   );
 }

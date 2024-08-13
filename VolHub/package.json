@@ -17,6 +17,7 @@
     "@fontsource/raleway": "^5.0.19",
     "axios": "^1.7.3",
     "chart.js": "^4.4.3",
+    "emoji-picker-react": "^4.11.1",
     "firebase": "^10.12.4",
     "formik": "^2.4.6",
     "framer-motion": "^11.3.19",
@@ -28,6 +29,7 @@
     "react-router-dom": "^6.25.1",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1",
+    "socket.io-client": "^4.7.5",
     "styled-components": "^6.1.12",
     "swiper": "^11.1.8",
     "yup": "^1.4.0"

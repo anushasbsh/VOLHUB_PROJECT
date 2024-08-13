@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { Box, Flex, Grid, Text, Image, Link } from '@chakra-ui/react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import brochure1 from '../../assets/Images/Brochures/brochure1.png';
-import brochure2 from '../../assets/Images/Brochures/brochure2.png';
-import brochure3 from '../../assets/Images/Brochures/brochure3.png';
-import brochure4 from '../../assets/Images/Brochures/brochure4.png';
+import brochure1 from '../../assets/Images/avantaa.png';
+import brochure2 from '../../assets/Images/knowafest.png';
+import brochure3 from '../../assets/Images/volunteers.webp';
+import { socket } from '../../Services/Socket';
+import { UsedbContext } from '../../Services/UseContext';
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -19,12 +20,30 @@ function Dashboard() {
 
   // State for carousel
   const [currentSlide, setCurrentSlide] = useState(0);
-  const images = [brochure1, brochure2, brochure3, brochure4];
+  const images = [brochure1, brochure2, brochure3];
+
+  const{dbUser}=UsedbContext();
+
+
+  if(dbUser)
+    {
+      socket.emit('user_online', dbUser.id);
+    }
   
   // Automatically move to the next slide every 2 seconds
   useEffect(() => {
+    // Load the saved slide index from localStorage
+    const savedSlide = localStorage.getItem('currentSlide');
+    if (savedSlide !== null) {
+      setCurrentSlide(Number(savedSlide));
+    }
+
     const interval = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
+      setCurrentSlide((prevSlide) => {
+        const newSlide = (prevSlide + 1) % images.length;
+        localStorage.setItem('currentSlide', newSlide); // Save the new slide index
+        return newSlide;
+      });
     }, 2000);
 
     // Clean up the interval on component unmount
@@ -34,6 +53,7 @@ function Dashboard() {
   // Function to handle dot navigation
   const goToSlide = (index) => {
     setCurrentSlide(index);
+    localStorage.setItem('currentSlide', index); // Save the slide index
   };
 
   // Sample data for the bar chart
@@ -138,11 +158,11 @@ function Dashboard() {
             boxShadow="xl" // Increased shadow
             p="6"
             borderRadius="md"
-            h="100%"
+            h="90%"
             transition="transform 0.3s"
             _hover={{ transform: 'scale(1.05)', boxShadow: '2xl' }} // Hover effect
           >
-            <Text fontSize="xl" fontWeight="bold" color="white">Events Organized</Text>
+            <Text fontSize="xl" fontWeight="bold" color="white">Number of Events Organized</Text>
             <Text fontSize="2xl" mt="4" color="white">{eventsAttended}</Text>
           </Box>
           <Box
@@ -150,7 +170,7 @@ function Dashboard() {
             boxShadow="xl" // Increased shadow
             p="6"
             borderRadius="md"
-            h="100%"
+            h="90%"
             transition="transform 0.3s"
             _hover={{ transform: 'scale(1.05)', boxShadow: '2xl' }} // Hover effect
           >
@@ -162,7 +182,7 @@ function Dashboard() {
             boxShadow="xl" // Increased shadow
             p="6"
             borderRadius="md"
-            h="100%"
+            h="90%"
             transition="transform 0.3s"
             _hover={{ transform: 'scale(1.05)', boxShadow: '2xl' }} // Hover effect
           >
@@ -174,7 +194,7 @@ function Dashboard() {
             boxShadow="xl" // Increased shadow
             p="6"
             borderRadius="md"
-            h="100%"
+            h="90%"
             transition="transform 0.3s"
             _hover={{ transform: 'scale(1.05)', boxShadow: '2xl' }} // Hover effect
           >
@@ -210,41 +230,33 @@ function Dashboard() {
               <Box
                 position="relative"
                 display="flex"
-                transition="transform 0.5s ease-in-out"
-                transform={`translateX(-${currentSlide * 100}%)`} // Move image container
-                height="100%"
+                justifyContent="center"
+                alignItems="center"
+                h="100%"
+                w="100%"
+                bg="gray.200"
+                borderRadius="md"
               >
-                {images.map((image, index) => (
-                  <Box key={index} flex="0 0 100%" height="100%">
-                    <Image
-                      src={image}
-                      alt={`Recent Event ${index}`}
-                      borderRadius="md"
-                      boxSize="100%"
-                      objectFit="cover"
+                <Image
+                  src={images[currentSlide]}
+                  alt={`Brochure ${currentSlide + 1}`}
+                  objectFit="cover"
+                  h="100%"
+                  w="100%"
+                />
+                <Box position="absolute" bottom="4" left="50%" transform="translateX(-50%)" display="flex" gap="2">
+                  {images.map((_, index) => (
+                    <Box
+                      key={index}
+                      width="10px"
+                      height="10px"
+                      bg={currentSlide === index ? 'black' : 'gray.400'}
+                      borderRadius="50%"
+                      cursor="pointer"
+                      onClick={() => goToSlide(index)}
                     />
-                  </Box>
-                ))}
-              </Box>
-              <Box
-                position="absolute"
-                bottom="10px"
-                left="50%"
-                transform="translateX(-50%)"
-                display="flex"
-                gap="2"
-              >
-                {images.map((_, index) => (
-                  <Box
-                    key={index}
-                    width="6px"
-                    height="6px"
-                    borderRadius="full"
-                    bg={index === currentSlide ? 'black' : 'gray.300'}
-                    cursor="pointer"
-                    onClick={() => goToSlide(index)}
-                  />
-                ))}
+                  ))}
+                </Box>
               </Box>
             </Box>
           </Box>

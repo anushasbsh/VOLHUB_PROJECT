@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Box, Button, Stack, FormControl, FormLabel, Heading, Input, Image, Text } from '@chakra-ui/react';
 import backgroundImage from '../assets/Images/bg.jpg'; 
 import logo from '../assets/Images/logo.png';
@@ -12,10 +12,10 @@ const VolLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const navigate = useNavigate();
-  const { google,setIsLogin,isVolunteer } = UsedbContext();
+  const [loginError,setLoginError] = useState('');
+  const { google,setIsLogin,isVolunteer, SignIn } = UsedbContext();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
     // Password validation  
@@ -23,9 +23,14 @@ const VolLogin = () => {
       setPasswordError('Password must be at least 8 characters long and include a mix of uppercase, lowercase, numbers, and special characters.');
       return;
     }
-    console.log('Email:', email);
-    console.log('Password:', password);
-    navigate('/dashboard');
+    
+    try {
+      await SignIn(email,password);
+     
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError('An error occurred. Please try again later.');
+    }
   };
 
   const validatePassword = (password) => {
@@ -111,6 +116,9 @@ const VolLogin = () => {
                 />
                 {passwordError && (
                   <Text color="red.500" mt={2}>{passwordError}</Text>
+                )}
+                {loginError && (
+                  <Text color="red.500" mt={2}>{loginError}</Text>
                 )}
               </FormControl>
                

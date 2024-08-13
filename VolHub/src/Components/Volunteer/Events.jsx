@@ -89,16 +89,19 @@ function EventsPage() {
 
   return (
     <div className="bg-[#f9feff] min-h-screen p-8 relative">
-      {/* Search Bar */}
-      <div className="absolute bg-white top-8 right-8">
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="p-2 border rounded w-96"
-        />
-      </div>
+  {/* Search Bar */}
+<div className="absolute top-8 right-8">
+  <input
+    type="text"
+    placeholder="Search events..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="p-2 border border-gray-300 rounded w-96 bg-white text-black focus:border-blue-500 focus:outline-none"
+  />
+</div>
+
+
+
 
       <h1 className="text-3xl font-bold mb-8 text-[#4d2408]">Start Your Volunteering Now!</h1>
 
@@ -137,9 +140,9 @@ function EventsPage() {
             <p className="text-red font-semibold mb-2">{selectedEvent.venue}</p>
             <button
               onClick={closeModal}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-green-500 hover:bg-green-700 text-white font-bold ml-80  py-2 px-4 rounded "
             >
-              Close
+              Confirm
             </button>
           </div>
         </div>

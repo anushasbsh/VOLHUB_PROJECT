@@ -1,25 +1,16 @@
-import { Navigate } from "react-router-dom";
-import PropType from "prop-types"
 import { UsedbContext } from "../Services/UseContext";
+import LandingPage from "../Pages/LandingPage";
+import Layout from "./Layout";
 
-function ProtectedRoute({children}) {
+function ProtectedRoute() {
 
     // ----------------------firebase setup----------------
     const {user}=UsedbContext();
     console.log(user)
-    if (location.pathname === '/auth'||location.pathname === '/test'||location.pathname === '/') {
-      // setIsLogin(true);
-        return children;
-      }
-  return user?(
-    children
-  ): <Navigate to={"/"}/>
+  
+
+    return user?<Layout/>:<LandingPage/>
 }
 
 
-ProtectedRoute.propTypes=
-{
-    children:PropType.node.isRequired
-}
-
-export default ProtectedRoute
+export default ProtectedRoute;

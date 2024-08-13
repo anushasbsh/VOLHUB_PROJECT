@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import backgroundImage from '../assets/Images/bg.jpg'; 
 import logo from '../assets/Images/logo.png';
 import userIcon from '../assets/Images/member.png'; // Import your user icon
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
-import { UsedbContext } from '../Services/UseContext';
-import OrgSignup from './Organisation/Signup';
+import { UsedbContext } from '../Services/UseContext';  
 import { Box, Text } from '@chakra-ui/react';
-import { SignUp } from '../Services/api';
+import { CreateUser } from '../Services/api';
+
+
 
 const VolSignup = () => {
   const [name, setName] = useState('');
@@ -17,8 +18,7 @@ const VolSignup = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState('');
   const [phoneError, setPhoneError] = useState('');
-  const {isVolunteer, setIsLogin } = UsedbContext();
-  const navigate = useNavigate();
+  const {isVolunteer, setIsLogin, SignUp } = UsedbContext();
 
   useEffect(() => {
     // Disable scrolling when the form is visible
@@ -63,14 +63,14 @@ const VolSignup = () => {
       return;
     }
     
- await SignUp({name,email,phno:phone});
+  await SignUp(email,password);
+  await CreateUser({name,email,phno:phone, password,role:isVolunteer?"volunteer":"organizer"});
  
-  navigate('/dashboard');
   }    
 
   return (
     <>
-    {isVolunteer && (
+   
       <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
         {/* Background Image with Blur */}
         <div 
@@ -176,9 +176,9 @@ const VolSignup = () => {
           </Box>
         </div>
       </div>
-    )}
+  
     {/* ------for - organisation signup */}
-    {!isVolunteer && <OrgSignup />}
+    {/* {!isVolunteer && <OrgSignup />} */}
     </>
   );
 };

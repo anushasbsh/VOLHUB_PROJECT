@@ -7,7 +7,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        customwhite:'#f0f2f5',
         primary: "#161622",
+        custompink:"#F50057",
         secondary: {
           DEFAULT: "#FF9C01",
           100: "#FF9001",
@@ -35,6 +37,18 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [function ({ addUtilities }) {
+    const newUtilities = {
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      ".no-scrollbar::-webkit-scrollbar": { display: "none" },
+      /* Hide scrollbar for IE, Edge and Firefox */
+      ".no-scrollbar": {
+        "-ms-overflow-style": "none",
+        "scrollbar-overflow": "hidden"
+      }
+    };
+
+    addUtilities(newUtilities);
+  }],
 }
 

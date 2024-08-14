@@ -1,5 +1,5 @@
 import axios from 'axios'
-const url="http://localhost:5000"
+const url="http://172.19.56.81:5000"
 
 export const CreateUser=async(data)=>
 {

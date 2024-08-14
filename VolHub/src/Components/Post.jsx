@@ -10,6 +10,7 @@ import ReactPlayer from "react-player";
 import { GetPost, getUserById } from "../Services/api";
 import { formatRelativeTime } from "../Services/Time";
 import Create_S_Post from "./Create_S_Post";
+import { UsedbContext } from "../Services/UseContext";
 
 function Post({ setIsToggled, isToggled }) {
   const [Posts, setPosts] = useState([]);
@@ -19,6 +20,7 @@ function Post({ setIsToggled, isToggled }) {
   const [commentBoxVisible, setCommentBoxVisible] = useState({});
   const [newComments, setNewComments] = useState({});
   const [comments, setComments] = useState({});
+  const{ dbUser }= UsedbContext();
 
   const onCreate_s_post = () => {
     setCreatePost(!createPost);
@@ -86,7 +88,7 @@ function Post({ setIsToggled, isToggled }) {
             </Box>
             {/* --------------username and slogan--- */}
             <Box>
-              <Text fontSize={'2xl'} className="mt-14 font-pextralight text-center">Anusha S B</Text>
+              <Text fontSize={'2xl'} className="mt-14 font-pextralight text-center">{dbUser?.name}</Text>
               <Text fontSize={'1xl'} className="font-pextralight text-center">✨ Volunteering: A Pathway to Purpose ✨</Text>
             </Box>
             {/* /------------  folowing and followers--- */}
